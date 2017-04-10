@@ -13,7 +13,11 @@ RAND=/usr/bin/rand
 export VPN=""
 vpn_up()
 {
-        random_vpn
+        if [ "$1" != "" ]; then
+                VPN=$1
+        else
+                random_vpn
+        fi
         sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
         sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
         sudo $IPSEC up $VPN
