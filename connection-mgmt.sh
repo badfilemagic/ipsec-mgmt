@@ -13,18 +13,21 @@ RAND=/usr/bin/rand
 export VPN=""
 vpn_up()
 {
-        if [ "$1" != "" ]; then
-                VPN=$1
-        else
-                random_vpn
-        fi
+        if [ "$1" != ""]; then
+		VPN=$1
+	else	
+		random_vpn
+	fi
         sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
         sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
         sudo $IPSEC up $VPN
 }
 vpn_down()
 {
-        sudo $IPSEC down $VPN
+	if [ "$VPN" == "" ]; then
+		VPN=`cat /tmp/vpn_conn`
+	fi
+	sudo $IPSEC down $VPN
         sudo sysctl -w net.ipv6.conf.all.disable_ipv6=0
         sudo sysctl -w net.ipv6.conf.default.disable_ipv6=0
 }
@@ -43,4 +46,5 @@ random_vpn()
         n=`list_vpns | wc -l`
         i=`$RAND -M $n`
         VPN=${VPNS[$i]}
+	echo $VPN > /tmp/vpn_conn
 }
